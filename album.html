@@ -8,7 +8,6 @@
       <title>Georgi Lukov - commercial and advertisement photographer</title>
       <meta name="description" content="">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	   <!-- Favicon -->
     <link rel="icon" type="image/png" href="mg/logo.png">
       <!-- Css -->
       <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all"/>
@@ -18,6 +17,19 @@
       <link href="css/fonts.css" rel="stylesheet" type="text/css"  media="all" />
       <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700,800,900" rel="stylesheet">
       <link href="https://fonts.googleapis.com/css?family=Raleway:400,400i,500,700" rel="stylesheet">
+	    <style>
+        img {
+            max-width: 100%; /* Ensure all images are responsive */
+            height: auto; /* Prevent image distortion */
+        }
+
+        @media only screen and (max-width: 600px) {
+            /* Target image 4.jpg and prevent resizing */
+            img[src$="4 .jpg"] {
+                max-width: none;
+            }
+        }
+    </style>
    </head>
    <body>
       <!-- Preloader -->
