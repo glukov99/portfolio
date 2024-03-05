@@ -117,12 +117,16 @@
 
 
     // Append images as css background
-
-    $('.background-img').each(function() {
+	
+ $('.background-img').each(function() {
         var path = $(this).children('img').attr('src');
         $(this).css('background-image', 'url("' + path + '")').css('background-position', 'initial');
     });
 
+    $('.background-img-alt').each(function() {
+        var path = $(this).children('img').attr('src');
+        $(this).css('background-image', 'url("' + path + '")').css('background-position', 'initial').css('background-repeat', 'no-repeat')
+    });
 
 
 
