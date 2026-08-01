@@ -62,18 +62,15 @@
   display: block; break-inside: avoid;
   margin-bottom: 3px;
   cursor: zoom-in;
-  opacity: 0; transform: translateY(16px);
-  animation: cardIn 0.5s ease forwards;
-}
-
-@keyframes cardIn {
-  to { opacity: 1; transform: translateY(0); }
+  background: rgba(255,255,255,0.03);
 }
 .photo-card img {
   width: 100%; height: auto; display: block;
   filter: brightness(0.8);
-  transition: transform 0.7s ease, filter 0.4s;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.7s ease, filter 0.4s;
 }
+.photo-card img.loaded { opacity: 1; }
 .photo-card:hover img { transform: scale(1.06); filter: brightness(0.95); }
 .photo-overlay {
   position: absolute; inset: 0;
@@ -230,7 +227,7 @@
       const label = isAll ? (ALBUMS.find(a => a.id === p.album)?.label || p.title) : p.title;
       const featured = isAll && p.album === 'svatbena' ? ' featured-cover' : '';
       return `
-        <div class="photo-card${featured}" data-index="${i}" style="animation-delay:${(i % 9) * 0.06}s">
+        <div class="photo-card${featured}" data-index="${i}">
           <img src="../img/${p.file}" alt="${label}" loading="lazy">
           <div class="photo-overlay">
             <div class="photo-title">${label}</div>
@@ -245,6 +242,16 @@
         card.addEventListener('click', () => setFilter(filtered[index].album, filterButtons[filtered[index].album]));
       } else {
         card.addEventListener('click', () => openLightbox(index, filtered));
+      }
+    });
+
+    // Fade each image in only once it has actually finished loading,
+    // instead of a preset timed animation that can flash/mismatch real load times
+    grid.querySelectorAll('.photo-card img').forEach(img => {
+      if (img.complete) {
+        img.classList.add('loaded');
+      } else {
+        img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
       }
     });
 
