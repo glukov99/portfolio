@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Портфолио — Сватбена фотография, кръщене и още | Георги Луков, Пловдив</title>
+<meta name="description" content="Портфолио на Георги Луков — сватбен фотограф в Пловдив и фотограф за кръщене. Разгледайте снимки от сватби, кръщенета, кампании, портрети и бизнес портрети.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://georgilukov.co/albums/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Георги Луков — Фотограф">
+<meta property="og:title" content="Портфолио — Сватбена фотография, кръщене и още | Георги Луков">
+<meta property="og:description" content="Разгледайте снимки от сватби, кръщенета, кампании, портрети и бизнес портрети от сватбен фотограф в Пловдив.">
+<meta property="og:url" content="https://georgilukov.co/albums/">
+<meta property="og:image" content="https://georgilukov.co/img/gallery/svatbena-126.jpg">
+<meta property="og:locale" content="bg_BG">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Портфолио — Сватбена фотография, кръщене и още | Георги Луков">
+<meta name="twitter:image" content="https://georgilukov.co/img/gallery/svatbena-126.jpg">
+
+<link rel="stylesheet" href="../style.css">
+<style>
+.filter-bar {
+  display: flex; align-items: center; gap: 0;
+  padding: 0 60px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-btn {
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gray); background: none; border: none;
+  padding: 20px 24px; cursor: pointer; white-space: nowrap;
+  border-bottom: 1px solid transparent; margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s;
+  font-family: var(--sans);
+}
+.filter-btn:hover { color: var(--white); }
+.filter-btn.active { color: var(--white); border-bottom-color: var(--white); }
+
+.gallery-main { padding: 40px 60px 100px; }
+.gallery-grid {
+  columns: 3;
+  column-gap: 3px;
+}
+/* "Всички" covers view: strict grid so DOM order matches visual row order
+   (a flowing multi-column masonry fills column-by-column, not row-by-row) */
+.gallery-grid.covers-grid {
+  columns: unset;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+.covers-grid .photo-card { aspect-ratio: 4/5; margin-bottom: 0; }
+.covers-grid .photo-card img { height: 100%; object-fit: cover; }
+@media (max-width: 768px) {
+  .covers-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.photo-card {
+  position: relative; overflow: hidden;
+  display: block; break-inside: avoid;
+  margin-bottom: 3px;
+  cursor: zoom-in;
+  opacity: 0; transform: translateY(16px);
+  animation: cardIn 0.5s ease forwards;
+}
+
+@keyframes cardIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+.photo-card img {
+  width: 100%; height: auto; display: block;
+  filter: brightness(0.8);
+  transition: transform 0.7s ease, filter 0.4s;
+}
+.photo-card:hover img { transform: scale(1.06); filter: brightness(0.95); }
+.photo-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0);
+  display: flex; align-items: flex-end;
+  padding: 20px;
+  transition: background 0.3s;
+}
+.photo-card:hover .photo-overlay { background: rgba(0,0,0,0.2); }
+.photo-title {
+  font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.photo-card:hover .photo-title { opacity: 1; transform: translateY(0); }
+
+/* Featured cover (e.g. weddings) — spans full width so it doesn't get lost among the rest */
+.photo-card.featured-cover {
+  column-span: all;
+  aspect-ratio: 21/9;
+  margin-bottom: 3px;
+}
+.covers-grid .photo-card.featured-cover {
+  grid-column: 1 / -1;
+  aspect-ratio: 21/9;
+}
+.photo-card.featured-cover img { width: 100%; height: 100%; object-fit: cover; }
+.photo-card.featured-cover .photo-overlay { background: linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%); }
+.photo-card.featured-cover .photo-title { font-size: 22px; letter-spacing: 0.08em; opacity: 1; transform: none; }
+@media (max-width: 768px) {
+  .photo-card.featured-cover { aspect-ratio: 4/5; }
+}
+
+/* LIGHTBOX */
+.lightbox {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.96);
+  display: none; align-items: center; justify-content: center;
+}
+.lightbox.open { display: flex; }
+.lightbox-img {
+  max-width: 90vw; max-height: 90vh;
+  object-fit: contain;
+  animation: lbIn 0.3s ease;
+}
+@keyframes lbIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.lightbox-close {
+  position: absolute; top: 28px; right: 36px;
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gray); cursor: pointer; background: none; border: none;
+  font-family: var(--sans); transition: color 0.2s;
+}
+.lightbox-close:hover { color: var(--white); }
+.lightbox-prev, .lightbox-next {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: none; border: 1px solid rgba(255,255,255,0.15);
+  color: var(--white); font-size: 11px; letter-spacing: 0.2em;
+  text-transform: uppercase; padding: 12px 20px; cursor: pointer;
+  font-family: var(--sans); transition: border-color 0.2s, background 0.2s;
+}
+.lightbox-prev:hover, .lightbox-next:hover {
+  border-color: var(--white); background: rgba(255,255,255,0.06);
+}
+.lightbox-prev { left: 32px; }
+.lightbox-next { right: 32px; }
+.lightbox-counter {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gray);
+}
+
+@media (max-width: 768px) {
+  .filter-bar { padding: 0 16px; }
+  .gallery-main { padding: 24px; }
+  .gallery-grid { columns: 2; }
+}
+</style>
+</head>
+<body>
+
+<div id="nav-mount"></div>
+
+<div class="page-hero">
+  <div class="page-hero-label">Portfolio</div>
+  <h1 class="page-hero-title">Галерия</h1>
+</div>
+
+<div class="filter-bar" id="filterBar"></div>
+
+<div class="gallery-main">
+  <div class="gallery-grid" id="galleryGrid"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lbClose">Затвори ✕</button>
+  <button class="lightbox-prev" id="lbPrev">← Предишна</button>
+  <img class="lightbox-img" id="lbImg" src="" alt="">
+  <button class="lightbox-next" id="lbNext">Следваща →</button>
+  <div class="lightbox-counter" id="lbCounter"></div>
+</div>
+
+<div id="footer-mount"></div>
+
+<script src="../photos.js"></script>
+<script src="../components.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML = renderNav('albums');
+  document.getElementById('footer-mount').innerHTML = renderFooter();
+
+  // Read album filter from URL
+  const params = new URLSearchParams(window.location.search);
+  let activeAlbum = params.get('album') || 'all';
+
+  // Build filter bar
+  const filterBar = document.getElementById('filterBar');
+  const filterButtons = {};
+
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn' + (activeAlbum === 'all' ? ' active' : '');
+  allBtn.textContent = 'Всички';
+  allBtn.onclick = () => setFilter('all', allBtn);
+  filterBar.appendChild(allBtn);
+  filterButtons.all = allBtn;
+
+  ALBUMS.forEach(album => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (activeAlbum === album.id ? ' active' : '');
+    btn.textContent = album.label;
+    btn.onclick = () => setFilter(album.id, btn);
+    filterBar.appendChild(btn);
+    filterButtons[album.id] = btn;
+  });
+
+  function setFilter(id, btn) {
+    activeAlbum = id;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGallery();
+    window.history.replaceState({}, '', id === 'all' ? '' : `?album=${id}`);
+  }
+
+  function renderGallery() {
+    const isAll = activeAlbum === 'all';
+    const filtered = isAll
+      ? ALBUMS.map(a => PHOTOS.find(p => p.album === a.id && p.cover)).filter(Boolean)
+      : PHOTOS.filter(p => p.album === activeAlbum);
+
+    const grid = document.getElementById('galleryGrid');
+    grid.classList.toggle('covers-grid', isAll);
+    grid.innerHTML = filtered.map((p, i) => {
+      const label = isAll ? (ALBUMS.find(a => a.id === p.album)?.label || p.title) : p.title;
+      const featured = isAll && p.album === 'svatbena' ? ' featured-cover' : '';
+      return `
+        <div class="photo-card${featured}" data-index="${i}" style="animation-delay:${(i % 9) * 0.06}s">
+          <img src="../img/${p.file}" alt="${label}" loading="lazy">
+          <div class="photo-overlay">
+            <div class="photo-title">${label}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    // Attach click behavior: covers jump into their album, single-album view opens lightbox
+    grid.querySelectorAll('.photo-card').forEach(card => {
+      const index = +card.dataset.index;
+      if (isAll) {
+        card.addEventListener('click', () => setFilter(filtered[index].album, filterButtons[filtered[index].album]));
+      } else {
+        card.addEventListener('click', () => openLightbox(index, filtered));
+      }
+    });
+
+    currentPhotos = filtered;
+  }
+
+  // Lightbox
+  let currentPhotos = [];
+  let currentIndex = 0;
+
+  function openLightbox(index, photos) {
+    currentIndex = index;
+    currentPhotos = photos;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function updateLightbox() {
+    const p = currentPhotos[currentIndex];
+    document.getElementById('lbImg').src = `../img/${p.file}`;
+    document.getElementById('lbImg').alt = p.title;
+    document.getElementById('lbCounter').textContent = `${currentIndex + 1} / ${currentPhotos.length}`;
+  }
+
+  document.getElementById('lbClose').onclick = () => {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  document.getElementById('lbPrev').onclick = () => {
+    currentIndex = (currentIndex - 1 + currentPhotos.length) % currentPhotos.length;
+    updateLightbox();
+  };
+  document.getElementById('lbNext').onclick = () => {
+    currentIndex = (currentIndex + 1) % currentPhotos.length;
+    updateLightbox();
+  };
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'ArrowLeft') document.getElementById('lbPrev').click();
+    if (e.key === 'ArrowRight') document.getElementById('lbNext').click();
+    if (e.key === 'Escape') document.getElementById('lbClose').click();
+  });
+  document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === document.getElementById('lightbox')) document.getElementById('lbClose').click();
+  });
+
+  renderGallery();
+</script>
+</body>
+</html>
