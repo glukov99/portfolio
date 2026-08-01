@@ -62,32 +62,48 @@
 .contact-detail-value a:hover { color: var(--gray); }
 
 .contact-form { padding: 80px 60px; }
-.contact-form h2 {
-  font-size: 22px; font-weight: 400; text-transform: uppercase;
-  letter-spacing: 0.08em; margin-bottom: 40px;
+.contact-greeting {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(30px, 3.6vw, 44px);
+  margin-bottom: 48px; line-height: 1.15;
 }
-.form-group { margin-bottom: 28px; }
-.form-label {
-  display: block; font-size: 9px; letter-spacing: 0.25em;
-  text-transform: uppercase; color: var(--gray); margin-bottom: 10px;
+.sentence-row {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: 14px 10px; margin-bottom: 32px;
+  font-size: 15px; color: var(--white);
 }
-.form-input, .form-textarea {
-  width: 100%; background: transparent;
-  border: none; border-bottom: 1px solid rgba(255,255,255,0.15);
-  color: var(--white); font-family: var(--sans); font-size: 14px;
-  padding: 12px 0; outline: none;
+.sentence-row.optional-row { color: rgba(240,237,232,0.5); }
+.sentence-label { white-space: nowrap; }
+.optional-tag {
+  font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--gray); margin-left: 2px;
+}
+.sentence-input {
+  flex: 1 1 130px; min-width: 100px;
+  background: transparent; border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.25);
+  color: var(--white); font-family: var(--sans); font-size: 15px;
+  padding: 4px 2px; outline: none;
   transition: border-color 0.25s;
 }
-.form-input:focus, .form-textarea:focus { border-bottom-color: var(--white); }
-.form-textarea { resize: none; height: 100px; }
+.sentence-input:focus { border-bottom-color: var(--white); }
+.sentence-input::placeholder {
+  color: rgba(240,237,232,0.3); text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.08em;
+}
+.email-row {
+  margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border);
+}
 .form-submit {
   font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
   color: var(--white); background: none;
   border: 1px solid rgba(255,255,255,0.25); padding: 14px 36px;
   cursor: pointer; font-family: var(--sans);
   transition: border-color 0.25s, background 0.25s;
+  margin-top: 28px;
 }
 .form-submit:hover { border-color: var(--white); background: rgba(255,255,255,0.05); }
+.form-submit:disabled { opacity: 0.5; cursor: default; }
 
 @media (max-width: 768px) {
   .contact-grid { grid-template-columns: 1fr; }
@@ -126,24 +142,38 @@
   </div>
 
   <div class="contact-form">
-    <h2>Пусни запитване</h2>
-    <form onsubmit="handleSubmit(event)">
-      <div class="form-group">
-        <label class="form-label">Твоето име</label>
-        <input class="form-input" type="text" placeholder="Иван Иванов" required>
+    <h2 class="contact-greeting">Здравей, Георги,</h2>
+    <form id="inquiryForm" action="https://formsubmit.co/ajax/georgi.lukow@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="Ново запитване от сайта">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_honey" style="display:none">
+
+      <div class="sentence-row">
+        <span class="sentence-label">Казвам се</span>
+        <input class="sentence-input" type="text" name="Име" placeholder="Иван Иванов" required>
+        <span class="sentence-label">и планирам</span>
+        <input class="sentence-input" type="text" name="Тип фотосесия" placeholder="сватба, кръщене, кампания..." required>
       </div>
-      <div class="form-group">
-        <label class="form-label">Имейл</label>
-        <input class="form-input" type="email" placeholder="email@example.com" required>
+
+      <div class="sentence-row optional-row">
+        <span class="sentence-label">В <span class="optional-tag">(по избор)</span></span>
+        <input class="sentence-input" type="text" name="Локация" placeholder="Пловдив">
+        <span class="sentence-label">на <span class="optional-tag">(по избор)</span></span>
+        <input class="sentence-input" type="text" name="Дата" placeholder="12 юни 2027">
       </div>
-      <div class="form-group">
-        <label class="form-label">Вид фотосесия</label>
-        <input class="form-input" type="text" placeholder="Кампания, каталог, портрет...">
+
+      <div class="sentence-row optional-row">
+        <span class="sentence-label">Може да ме намериш <span class="optional-tag">(по избор)</span></span>
+        <input class="sentence-input" type="text" name="Instagram" placeholder="@instagram">
+        <span class="sentence-label">в Instagram</span>
       </div>
-      <div class="form-group">
-        <label class="form-label">Съобщение</label>
-        <textarea class="form-textarea" placeholder="Разкажи ми повече за проекта..."></textarea>
+
+      <div class="sentence-row email-row">
+        <span class="sentence-label">Изпрати ми предложение на</span>
+        <input class="sentence-input" type="email" name="email" placeholder="email@example.com" required>
       </div>
+
       <button class="form-submit" type="submit">Изпрати →</button>
     </form>
   </div>
@@ -155,12 +185,31 @@
 <script>
   document.getElementById('nav-mount').innerHTML = renderNav('contact');
   document.getElementById('footer-mount').innerHTML = renderFooter();
-  function handleSubmit(e) {
+
+  const inquiryForm = document.getElementById('inquiryForm');
+  inquiryForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('.form-submit');
-    btn.textContent = 'Изпратено ✓';
-    btn.style.borderColor = 'rgba(255,255,255,0.5)';
-  }
+    const form = e.target;
+    const btn = form.querySelector('.form-submit');
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Изпращане...';
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      });
+      if (!res.ok) throw new Error('Request failed');
+      btn.textContent = 'Изпратено ✓';
+      btn.style.borderColor = 'rgba(255,255,255,0.5)';
+      form.reset();
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Грешка — опитай пак';
+      setTimeout(() => { btn.textContent = originalLabel; }, 3000);
+    }
+  });
 </script>
 </body>
 </html>

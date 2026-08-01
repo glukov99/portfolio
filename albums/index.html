@@ -40,27 +40,32 @@
 .filter-btn.active { color: var(--white); border-bottom-color: var(--white); }
 
 .gallery-main { padding: 40px 60px 100px; }
+/* Photos are distributed into these column divs in reading order (row-major,
+   left-to-right then top-to-bottom) via JS, rather than a CSS multi-column
+   flow which fills column-by-column (top-to-bottom per column first). */
 .gallery-grid {
-  columns: 3;
-  column-gap: 3px;
+  display: flex;
+  gap: 3px;
 }
-/* "Всички" covers view: strict grid so DOM order matches visual row order
-   (a flowing multi-column masonry fills column-by-column, not row-by-row) */
+.gallery-col {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  gap: 3px;
+}
+/* "Всички" covers view: strict grid, direct children (no column wrapper divs) */
 .gallery-grid.covers-grid {
-  columns: unset;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 3px;
 }
-.covers-grid .photo-card { aspect-ratio: 4/5; margin-bottom: 0; }
+.covers-grid .photo-card { aspect-ratio: 4/5; }
 .covers-grid .photo-card img { height: 100%; object-fit: cover; }
 @media (max-width: 768px) {
   .covers-grid { grid-template-columns: repeat(2, 1fr); }
 }
 .photo-card {
   position: relative; overflow: hidden;
-  display: block; break-inside: avoid;
-  margin-bottom: 3px;
+  display: block;
   cursor: zoom-in;
   background: rgba(255,255,255,0.03);
 }
@@ -88,11 +93,6 @@
 .photo-card:hover .photo-title { opacity: 1; transform: translateY(0); }
 
 /* Featured cover (e.g. weddings) — spans full width so it doesn't get lost among the rest */
-.photo-card.featured-cover {
-  column-span: all;
-  aspect-ratio: 21/9;
-  margin-bottom: 3px;
-}
 .covers-grid .photo-card.featured-cover {
   grid-column: 1 / -1;
   aspect-ratio: 21/9;
@@ -223,7 +223,8 @@
 
     const grid = document.getElementById('galleryGrid');
     grid.classList.toggle('covers-grid', isAll);
-    grid.innerHTML = filtered.map((p, i) => {
+
+    const cardHTML = (p, i) => {
       const label = isAll ? (ALBUMS.find(a => a.id === p.album)?.label || p.title) : p.title;
       const featured = isAll && p.album === 'svatbena' ? ' featured-cover' : '';
       return `
@@ -233,7 +234,19 @@
             <div class="photo-title">${label}</div>
           </div>
         </div>`;
-    }).join('');
+    };
+
+    if (isAll) {
+      grid.innerHTML = filtered.map(cardHTML).join('');
+    } else {
+      // Distribute into columns in reading order (row-major: left-to-right,
+      // then top-to-bottom) so photo order matches the site's intended sequence,
+      // instead of a CSS multi-column flow which fills column-by-column.
+      const cols = window.innerWidth <= 768 ? 2 : 3;
+      const columns = Array.from({ length: cols }, () => []);
+      filtered.forEach((p, i) => columns[i % cols].push(cardHTML(p, i)));
+      grid.innerHTML = columns.map(col => `<div class="gallery-col">${col.join('')}</div>`).join('');
+    }
 
     // Attach click behavior: covers jump into their album, single-album view opens lightbox
     grid.querySelectorAll('.photo-card').forEach(card => {
@@ -300,6 +313,21 @@
   });
 
   renderGallery();
+
+  // Re-render if the column count would change (e.g. crossing the mobile breakpoint),
+  // since the column distribution is computed at render time, not via pure CSS.
+  let lastCols = window.innerWidth <= 768 ? 2 : 3;
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const cols = window.innerWidth <= 768 ? 2 : 3;
+      if (cols !== lastCols) {
+        lastCols = cols;
+        renderGallery();
+      }
+    }, 150);
+  });
 </script>
 </body>
 </html>
